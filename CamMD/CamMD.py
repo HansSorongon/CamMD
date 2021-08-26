@@ -9,9 +9,21 @@
 
 
 from PyQt5 import QtCore, QtGui, QtWidgets
+import cv2 
 
 
 class Ui_MainWindow(object):
+
+
+    def __init__(self):
+            
+            self.Worker1 = Worker1()
+            self.Worker1.start()
+            self.Worker1.update_image.connect(self.image_update_slot)
+
+    def image_update_slot(self, Image):
+            self.camera_box.setPixmap(QtGui.QPixmap.fromImage(Image))
+
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
         MainWindow.resize(1059, 615)
@@ -160,6 +172,34 @@ class Ui_MainWindow(object):
         self.search.setText(_translate("MainWindow", "Search"))
         self.scan_again.setText(_translate("MainWindow", "Scan Again"))
         self.severity_message.setText(_translate("MainWindow", "Don’t worry! You don’t have to go see a doctor yet. We’ve got you covered right here!"))
+
+class Worker1(QtCore.QThread):
+        update_image = QtCore.pyqtSignal(QtGui.QImage)
+        def run(self):
+                self.ThreadActive = True
+                capture = cv2.VideoCapture(0) # Initialize camera
+                while self.ThreadActive:
+                        s, frame = capture.read()
+                        if s:
+                                image = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+                                flipped_image = cv2.flip(image, 1)
+                                convert_to_qt = QtGui.QImage(flipped_image.data, flipped_image.shape[1], flipped_image.shape[0], QtGui.QImage.Format_RGB888)
+                                picture = convert_to_qt.scaled(521, 403, QtCore.Qt.KeepAspectRatio)
+                                self.update_image.emit(picture) 
+        
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 if __name__ == "__main__":
