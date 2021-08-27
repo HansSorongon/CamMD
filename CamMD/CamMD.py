@@ -10,19 +10,29 @@
 
 from PyQt5 import QtCore, QtGui, QtWidgets
 import cv2 
-
+# from Treatments import Ui_TreatmentsWindow
 
 class Ui_MainWindow(object):
 
+    def __init__(self):   
+        self.Worker1 = Worker1()
+        self.Worker1.start()
+        self.Worker1.update_image.connect(self.image_update_slot)
+       
+    def open_window(self):
+        self.window = QtWidgets.QMainWindow()
+        self.ui = Ui_TreatmentsWindow()
+        self.ui.setupUi(self.window)
+        self.window.show()
+        MainWindow.hide()
 
-    def __init__(self):
-            
-            self.Worker1 = Worker1()
-            self.Worker1.start()
-            self.Worker1.update_image.connect(self.image_update_slot)
+    def cancel_cam(self):
+        self.Worker1.stop()
+        MainWindow.hide()
 
-    def image_update_slot(self, Image):
-            self.camera_box.setPixmap(QtGui.QPixmap.fromImage(Image))
+
+    def image_update_slot(self, image):
+        self.camera_box.setPixmap(QtGui.QPixmap.fromImage(image))
 
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
@@ -89,30 +99,23 @@ class Ui_MainWindow(object):
 "color: white;\n"
 "")
         self.treat.setObjectName("treat")
-        self.search = QtWidgets.QPushButton(self.centralwidget)
-        self.search.setGeometry(QtCore.QRect(590, 490, 141, 51))
+        self.treat.clicked.connect(self.open_window)
         font = QtGui.QFont()
         font.setFamily("Poppins")
         font.setPointSize(16)
-        self.search.setFont(font)
-        self.search.setCursor(QtGui.QCursor(QtCore.Qt.PointingHandCursor))
-        self.search.setStyleSheet("border-radius: 17px;\n"
-"background-color: #09BC5B; \n"
-"color: white;\n"
-"")
-        self.search.setObjectName("search")
-        self.scan_again = QtWidgets.QPushButton(self.centralwidget)
-        self.scan_again.setGeometry(QtCore.QRect(760, 490, 141, 51))
+        self.cancel = QtWidgets.QPushButton(self.centralwidget)
+        self.cancel.setGeometry(QtCore.QRect(590, 490, 311, 51))
         font = QtGui.QFont()
         font.setFamily("Poppins")
         font.setPointSize(16)
-        self.scan_again.setFont(font)
-        self.scan_again.setCursor(QtGui.QCursor(QtCore.Qt.PointingHandCursor))
-        self.scan_again.setStyleSheet("border-radius: 17px;\n"
-"background-color: #09BC5B; \n"
+        self.cancel.setFont(font)
+        self.cancel.setCursor(QtGui.QCursor(QtCore.Qt.PointingHandCursor))
+        self.cancel.setStyleSheet("border-radius: 17px;\n"
+"background-color: #022738; \n"
 "color: white;\n"
 "")
-        self.scan_again.setObjectName("scan_again")
+        self.cancel.setObjectName("cancel")
+        self.cancel.clicked.connect(self.cancel_cam) #connect to cancel
         self.label_6 = QtWidgets.QLabel(self.centralwidget)
         self.label_6.setGeometry(QtCore.QRect(890, 140, 161, 401))
         self.label_6.setText("")
@@ -147,8 +150,8 @@ class Ui_MainWindow(object):
         self.severity.raise_()
         self.output_disease.raise_()
         self.treat.raise_()
-        self.search.raise_()
-        self.scan_again.raise_()
+
+        self.cancel.raise_()
         self.severity_message.raise_()
         MainWindow.setCentralWidget(self.centralwidget)
         self.menubar = QtWidgets.QMenuBar(MainWindow)
@@ -166,11 +169,11 @@ class Ui_MainWindow(object):
         _translate = QtCore.QCoreApplication.translate
         MainWindow.setWindowTitle(_translate("MainWindow", "CamMD"))
         self.camera_box.setText(_translate("MainWindow", "Stream camera here"))
-        self.severity.setText(_translate("MainWindow", "SEVERITY:"))
+        self.severity.setText(_translate("MainWindow", "SEVERITY:")) # edit severity here
         self.output_disease.setText(_translate("MainWindow", "OUTPUT DISEASE HERE"))
+
         self.treat.setText(_translate("MainWindow", "Treat >>>"))
-        self.search.setText(_translate("MainWindow", "Search"))
-        self.scan_again.setText(_translate("MainWindow", "Scan Again"))
+        self.cancel.setText(_translate("MainWindow", "Cancel"))
         self.severity_message.setText(_translate("MainWindow", "Don’t worry! You don’t have to go see a doctor yet. We’ve got you covered right here!"))
 
 class Worker1(QtCore.QThread):
@@ -186,21 +189,240 @@ class Worker1(QtCore.QThread):
                                 convert_to_qt = QtGui.QImage(flipped_image.data, flipped_image.shape[1], flipped_image.shape[0], QtGui.QImage.Format_RGB888)
                                 picture = convert_to_qt.scaled(521, 403, QtCore.Qt.KeepAspectRatio)
                                 self.update_image.emit(picture) 
+        def stop(self):
+                self.ThreadActive = False
+                self.quit()
+
+class Ui_TreatmentsWindow(object):
+
+    def home(self):
+        self.window = QtWidgets.QMainWindow()
+        self.ui = Ui_MainWindow()
+        self.ui.setupUi(self.window)
+        self.window.show()
         
+    def setupUi(self, TreatmentsWindow):
+        TreatmentsWindow.setObjectName("TreatmentsWindow")
+        TreatmentsWindow.resize(1059, 615)
+        TreatmentsWindow.setStyleSheet("background-color: #007EA7;\n"
+"\n"
+"")
+        self.centralwidget = QtWidgets.QWidget(TreatmentsWindow)
+        self.centralwidget.setObjectName("centralwidget")
+        self.label_3 = QtWidgets.QLabel(self.centralwidget)
+        self.label_3.setGeometry(QtCore.QRect(0, 10, 291, 81))
+        self.label_3.setText("")
+        self.label_3.setPixmap(QtGui.QPixmap("logo.png"))
+        self.label_3.setObjectName("label_3")
+        self.header_rectangle_2 = QtWidgets.QLabel(self.centralwidget)
+        self.header_rectangle_2.setGeometry(QtCore.QRect(0, 0, 1071, 91))
+        self.header_rectangle_2.setStyleSheet("background-color: #022738;")
+        self.header_rectangle_2.setText("")
+        self.header_rectangle_2.setObjectName("header_rectangle_2")
+        self.treatment1 = QtWidgets.QPushButton(self.centralwidget)
+        self.treatment1.setGeometry(QtCore.QRect(40, 120, 271, 51))
+        font = QtGui.QFont()
+        font.setFamily("Poppins")
+        font.setPointSize(16)
+        self.treatment1.setFont(font)
+        self.treatment1.setCursor(QtGui.QCursor(QtCore.Qt.PointingHandCursor))
+        self.treatment1.setStyleSheet("border-radius: 17px;\n"
+"background-color: #E5E5E5; \n"
+"\n"
+"")
+        self.treatment1.setObjectName("treatment1")
+        self.treatment2 = QtWidgets.QPushButton(self.centralwidget)
+        self.treatment2.setGeometry(QtCore.QRect(40, 180, 271, 51))
+        font = QtGui.QFont()
+        font.setFamily("Poppins")
+        font.setPointSize(16)
+        self.treatment2.setFont(font)
+        self.treatment2.setCursor(QtGui.QCursor(QtCore.Qt.PointingHandCursor))
+        self.treatment2.setStyleSheet("border-radius: 17px;\n"
+"background-color: #E5E5E5; \n"
+"\n"
+"")
+        self.treatment2.setObjectName("treatment2")
+        self.treatment4 = QtWidgets.QPushButton(self.centralwidget)
+        self.treatment4.setGeometry(QtCore.QRect(40, 300, 271, 51))
+        font = QtGui.QFont()
+        font.setFamily("Poppins")
+        font.setPointSize(16)
+        self.treatment4.setFont(font)
+        self.treatment4.setCursor(QtGui.QCursor(QtCore.Qt.PointingHandCursor))
+        self.treatment4.setStyleSheet("border-radius: 17px;\n"
+"background-color: #E5E5E5; \n"
+"\n"
+"")
+        self.treatment4.setObjectName("treatment4")
+        self.treatment3 = QtWidgets.QPushButton(self.centralwidget)
+        self.treatment3.setGeometry(QtCore.QRect(40, 240, 271, 51))
+        font = QtGui.QFont()
+        font.setFamily("Poppins")
+        font.setPointSize(16)
+        self.treatment3.setFont(font)
+        self.treatment3.setCursor(QtGui.QCursor(QtCore.Qt.PointingHandCursor))
+        self.treatment3.setStyleSheet("border-radius: 17px;\n"
+"background-color: #E5E5E5; \n"
+"\n"
+"")
+        self.treatment3.setObjectName("treatment3")
+        self.treatment6 = QtWidgets.QPushButton(self.centralwidget)
+        self.treatment6.setGeometry(QtCore.QRect(40, 420, 271, 51))
+        font = QtGui.QFont()
+        font.setFamily("Poppins")
+        font.setPointSize(16)
+        self.treatment6.setFont(font)
+        self.treatment6.setCursor(QtGui.QCursor(QtCore.Qt.PointingHandCursor))
+        self.treatment6.setStyleSheet("border-radius: 17px;\n"
+"background-color: #E5E5E5; \n"
+"\n"
+"")
+        self.treatment6.setObjectName("treatment6")
+        self.treatment5 = QtWidgets.QPushButton(self.centralwidget)
+        self.treatment5.setGeometry(QtCore.QRect(40, 360, 271, 51))
+        font = QtGui.QFont()
+        font.setFamily("Poppins")
+        font.setPointSize(16)
+        self.treatment5.setFont(font)
+        self.treatment5.setCursor(QtGui.QCursor(QtCore.Qt.PointingHandCursor))
+        self.treatment5.setStyleSheet("border-radius: 17px;\n"
+"background-color: #E5E5E5; \n"
+"\n"
+"")
+        self.treatment5.setObjectName("treatment5")
+        self.back_home = QtWidgets.QPushButton(self.centralwidget)
+        self.back_home.setGeometry(QtCore.QRect(40, 480, 271, 51))
+        font = QtGui.QFont()
+        font.setFamily("Poppins")
+        font.setPointSize(16)
+        self.back_home.setFont(font)
+        self.back_home.setCursor(QtGui.QCursor(QtCore.Qt.PointingHandCursor))
+        self.back_home.setStyleSheet("border-radius: 17px;\n"
+"background-color: #CB3B3B; \n"
+"color: white;\n"
+"\n"
+"\n"
+"\n"
+"")
+        self.back_home.setObjectName("back_home")
+        self.back_home.clicked.connect(self.home)
+        self.stepbox1 = QtWidgets.QPlainTextEdit(self.centralwidget)
+        self.stepbox1.setGeometry(QtCore.QRect(360, 190, 661, 91))
+        font = QtGui.QFont()
+        font.setFamily("Poppins")
+        font.setPointSize(11)
+        self.stepbox1.setFont(font)
+        self.stepbox1.setStyleSheet("background-color: #E5E5E5; border-radius: 15px;")
+        self.stepbox1.setObjectName("stepbox1")
+        self.first_step = QtWidgets.QLabel(self.centralwidget)
+        self.first_step.setGeometry(QtCore.QRect(370, 120, 131, 61))
+        font = QtGui.QFont()
+        font.setFamily("Poppins")
+        font.setPointSize(20)
+        self.first_step.setFont(font)
+        self.first_step.setStyleSheet("background-color: #09BC5B;\n"
+"border-radius: 15px;\n"
+"padding: 15px;\n"
+"color: white;\n"
+"\n"
+"")
+        self.first_step.setObjectName("first_step")
+        self.second_step = QtWidgets.QLabel(self.centralwidget)
+        self.second_step.setGeometry(QtCore.QRect(370, 300, 131, 61))
+        font = QtGui.QFont()
+        font.setFamily("Poppins")
+        font.setPointSize(20)
+        self.second_step.setFont(font)
+        self.second_step.setStyleSheet("background-color: #09BC5B;\n"
+"border-radius: 15px;\n"
+"padding: 15px;\n"
+"color: white;\n"
+"\n"
+"\n"
+"")
+        self.second_step.setObjectName("second_step")
+        self.stepbox2 = QtWidgets.QPlainTextEdit(self.centralwidget)
+        self.stepbox2.setGeometry(QtCore.QRect(360, 370, 661, 101))
+        font = QtGui.QFont()
+        font.setFamily("Poppins")
+        font.setPointSize(11)
+        self.stepbox2.setFont(font)
+        self.stepbox2.setStyleSheet("background-color: #E5E5E5; border-radius: 15px;")
+        self.stepbox2.setObjectName("stepbox2")
+        self.page_back = QtWidgets.QPushButton(self.centralwidget)
+        self.page_back.setGeometry(QtCore.QRect(360, 480, 61, 51))
+        font = QtGui.QFont()
+        font.setFamily("Poppins")
+        font.setPointSize(16)
+        self.page_back.setFont(font)
+        self.page_back.setCursor(QtGui.QCursor(QtCore.Qt.PointingHandCursor))
+        self.page_back.setStyleSheet("border-radius: 17px;\n"
+"background-color: #022738; \n"
+"color: white;\n"
+"\n"
+"\n"
+"\n"
+"")
+        self.page_back.setObjectName("page_back")
+        self.page_forward = QtWidgets.QPushButton(self.centralwidget)
+        self.page_forward.setGeometry(QtCore.QRect(950, 480, 61, 51))
+        font = QtGui.QFont()
+        font.setFamily("Poppins")
+        font.setPointSize(16)
+        self.page_forward.setFont(font)
+        self.page_forward.setCursor(QtGui.QCursor(QtCore.Qt.PointingHandCursor))
+        self.page_forward.setStyleSheet("border-radius: 17px;\n"
+"background-color: #022738; \n"
+"color: white;\n"
+"\n"
+"\n"
+"\n"
+"")
+        self.page_forward.setObjectName("page_forward")
+        self.header_rectangle_2.raise_()
+        self.label_3.raise_()
+        self.treatment1.raise_()
+        self.treatment2.raise_()
+        self.treatment4.raise_()
+        self.treatment3.raise_()
+        self.treatment6.raise_()
+        self.treatment5.raise_()
+        self.back_home.raise_()
+        self.stepbox1.raise_()
+        self.first_step.raise_()
+        self.second_step.raise_()
+        self.stepbox2.raise_()
+        self.page_back.raise_()
+        self.page_forward.raise_()
+        TreatmentsWindow.setCentralWidget(self.centralwidget)
+        self.menubar = QtWidgets.QMenuBar(TreatmentsWindow)
+        self.menubar.setGeometry(QtCore.QRect(0, 0, 1059, 21))
+        self.menubar.setObjectName("menubar")
+        TreatmentsWindow.setMenuBar(self.menubar)
+        self.statusbar = QtWidgets.QStatusBar(TreatmentsWindow)
+        self.statusbar.setObjectName("statusbar")
+        TreatmentsWindow.setStatusBar(self.statusbar)
 
+        self.retranslateUi(TreatmentsWindow)
+        QtCore.QMetaObject.connectSlotsByName(TreatmentsWindow)
 
-
-
-
-
-
-
-
-
-
-
-
-
+    def retranslateUi(self, TreatmentsWindow):
+        _translate = QtCore.QCoreApplication.translate
+        TreatmentsWindow.setWindowTitle(_translate("TreatmentsWindow", "Treatments"))
+        self.treatment1.setText(_translate("TreatmentsWindow", "Treatment 1"))
+        self.treatment2.setText(_translate("TreatmentsWindow", "Treatment 2"))
+        self.treatment4.setText(_translate("TreatmentsWindow", "Treatment 4"))
+        self.treatment3.setText(_translate("TreatmentsWindow", "Treatment 3"))
+        self.treatment6.setText(_translate("TreatmentsWindow", "Treatment 6"))
+        self.treatment5.setText(_translate("TreatmentsWindow", "Treatment 5"))
+        self.back_home.setText(_translate("TreatmentsWindow", "Back"))
+        self.stepbox1.setPlainText(_translate("TreatmentsWindow", "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum."))
+        self.first_step.setText(_translate("TreatmentsWindow", "Step 1:"))
+        self.second_step.setText(_translate("TreatmentsWindow", "Step 2:"))
+        self.stepbox2.setPlainText(_translate("TreatmentsWindow", "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum."))
+        self.page_back.setText(_translate("TreatmentsWindow", "<<"))
+        self.page_forward.setText(_translate("TreatmentsWindow", ">>"))
 
 if __name__ == "__main__":
     import sys
