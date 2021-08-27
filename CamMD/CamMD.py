@@ -13,6 +13,7 @@ import cv2
 # from Treatments import Ui_TreatmentsWindow
 
 class Ui_MainWindow(object):
+    """MAIN WINDOW"""
 
     def __init__(self):   
         self.Worker1 = Worker1()
@@ -176,7 +177,9 @@ class Ui_MainWindow(object):
         self.cancel.setText(_translate("MainWindow", "Cancel"))
         self.severity_message.setText(_translate("MainWindow", "Don’t worry! You don’t have to go see a doctor yet. We’ve got you covered right here!"))
 
-class Worker1(QtCore.QThread):
+class Worker1(QtCore.QThread): 
+        """CLASS TO THREAD CAMERA"""
+
         update_image = QtCore.pyqtSignal(QtGui.QImage)
         def run(self):
                 self.ThreadActive = True
@@ -194,6 +197,7 @@ class Worker1(QtCore.QThread):
                 self.quit()
 
 class Ui_TreatmentsWindow(object):
+    """TREATMENTS WINDOW"""
 
     def home(self):
         self.window = QtWidgets.QMainWindow()
