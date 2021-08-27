@@ -14,6 +14,9 @@ REQUIREMENTS: FRAMEWORKS, LIBRARIES, SOFTWARES USED:
 GUI - PyQT, PyQT Designer
 BACKEND - Python, OpenCV
 
+NOTE: You can find the YOLO cfg and weights files on 
+https://drive.google.com/drive/folders/1TB80BV8SAPCE99gIM659ppj9-7uTnX9d?usp=sharing
+
 THE TEAM
 ==============================================================================
 
