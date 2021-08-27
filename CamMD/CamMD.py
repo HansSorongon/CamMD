@@ -9,8 +9,10 @@
 
 
 from PyQt5 import QtCore, QtGui, QtWidgets
-import cv2 
+import cv2, numpy as np
 # from Treatments import Ui_TreatmentsWindow
+
+label_list = set() # Global label_list lololol
 
 class Ui_MainWindow(object):
     """MAIN WINDOW"""
@@ -27,12 +29,14 @@ class Ui_MainWindow(object):
         self.ui.setupUi(self.window)
         self.window.show()
         MainWindow.hide()
+        
+        
 
-    def cancel_cam(self):
+    def scan_now(self):
         self.Worker1.stop()
-        MainWindow.hide()
-
-
+        label_list_final = label_list
+        print(f"This is your final label list {label_list_final}")
+        
     def image_update_slot(self, image):
         self.camera_box.setPixmap(QtGui.QPixmap.fromImage(image))
 
@@ -117,7 +121,7 @@ class Ui_MainWindow(object):
 "color: white;\n"
 "")
         self.cancel.setObjectName("cancel")
-        self.cancel.clicked.connect(self.cancel_cam) #connect to cancel
+        self.cancel.clicked.connect(self.scan_now) #connect to cancel
         self.label_6 = QtWidgets.QLabel(self.centralwidget)
         self.label_6.setGeometry(QtCore.QRect(890, 140, 161, 401))
         self.label_6.setText("")
@@ -172,11 +176,11 @@ class Ui_MainWindow(object):
         _translate = QtCore.QCoreApplication.translate
         MainWindow.setWindowTitle(_translate("MainWindow", "CamMD"))
         self.camera_box.setText(_translate("MainWindow", "Stream camera here"))
-        self.severity.setText(_translate("MainWindow", f"SEVERITY: {severity}")) # edit severity here
+        self.severity.setText(_translate("MainWindow", f"SEVERITY: ")) # edit severity here
         self.output_disease.setText(_translate("MainWindow", "RASHES"))
 
         self.treat.setText(_translate("MainWindow", "Treat >>>"))
-        self.cancel.setText(_translate("MainWindow", "Cancel"))
+        self.cancel.setText(_translate("MainWindow", "Scan Now"))
         self.severity_message.setText(_translate("MainWindow", "Don’t worry! You don’t have to go see a doctor yet. We’ve got you covered right here!"))
 
 class Worker1(QtCore.QThread): 
@@ -184,30 +188,68 @@ class Worker1(QtCore.QThread):
 
         update_image = QtCore.pyqtSignal(QtGui.QImage)
         def run(self):
+                
+                net = cv2.dnn.readNet('yolov3.weights', 'yolov3.cfg')
+                classes = []
+                with open("coco.names", "r") as f:
+                        classes = f.read().splitlines()
                 self.ThreadActive = True
                 capture = cv2.VideoCapture(0) # Initialize camera
+                font = cv2.FONT_HERSHEY_PLAIN
+                colors = np.random.uniform(0, 255, size=(100, 3))
                 while self.ThreadActive:
                         s, frame = capture.read() # frames for capture
+                        height, width, _ = frame.shape
+                        blob = cv2.dnn.blobFromImage(frame, 1 / 255, (416, 416), (0, 0, 0), swapRB=True, crop=False)
+                        net.setInput(blob)
+                        output_layers_names = net.getUnconnectedOutLayersNames()
+                        layerOutputs = net.forward(output_layers_names)
+
+                        boxes = []
+                        confidences = []
+                        class_ids = []
+
+                        for output in layerOutputs:
+                            for detection in output:
+                                scores = detection[5:]
+                                class_id = np.argmax(scores)
+                                confidence = scores[class_id]
+                                if confidence > 0.2:
+                                    center_x = int(detection[0] * width)
+                                    center_y = int(detection[1] * height)
+                                    w = int(detection[2] * width)
+                                    h = int(detection[3] * height)
+
+                                    x = int(center_x - w / 2)
+                                    y = int(center_y - h / 2)
+
+                                    boxes.append([x, y, w, h])
+                                    confidences.append((float(confidence)))
+                                    class_ids.append(class_id)
+                        indexes = cv2.dnn.NMSBoxes(boxes, confidences, 0.2, 0.4)
+                        if len(indexes) > 0:
+                            for i in indexes.flatten():
+                                x, y, w, h = boxes[i]
+                                label = str(classes[class_ids[i]])
+                                label_list.add(label)
+                                confidence = str(round(confidences[i], 2))
+                                color = colors[i]
+                                cv2.rectangle(frame, (x, y), (x + w, y + h), color, 2)
+                                cv2.putText(frame, label + " " + confidence, (x, y + 20), font, 2, (255, 255, 255), 2)
+                        print(label_list)
                         if s:
                                 image = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
-                                flipped_image = cv2.flip(image, 1)
-                                convert_to_qt = QtGui.QImage(flipped_image.data, flipped_image.shape[1], flipped_image.shape[0], QtGui.QImage.Format_RGB888)
+                                convert_to_qt = QtGui.QImage(image.data, image.shape[1], image.shape[0], QtGui.QImage.Format_RGB888)
                                 picture = convert_to_qt.scaled(521, 403, QtCore.Qt.KeepAspectRatio)
                                 self.update_image.emit(picture) 
         def stop(self):
                 self.ThreadActive = False
                 self.quit()
-
-        
-
-
-
-
-
+        def stop_getting_list(self):
+                self.ThreadActive = False
 
 class Ui_TreatmentsWindow(object):
     """TREATMENTS WINDOW"""
-
     def home(self):
         self.window = QtWidgets.QMainWindow()
         self.ui = Ui_MainWindow()
