@@ -13,6 +13,7 @@ import cv2, numpy as np
 # from Treatments import Ui_TreatmentsWindow
 
 label_list = set() # Global label_list lololol
+disease = ""
 
 class Ui_MainWindow(object):
     """MAIN WINDOW"""
@@ -36,6 +37,16 @@ class Ui_MainWindow(object):
         self.Worker1.stop()
         label_list_final = label_list
         print(f"This is your final label list {label_list_final}")
+        if 'blister' in label_list_final:
+                disease = "BLISTER"
+                self.severity_message.setText("Don’t worry! You don’t have to go see a doctor yet. We’ve got you covered right here!")
+                self.severity.setText("SEVERITY: MILD")
+                self.output_disease.setText(disease)
+        if 'rashes' in label_list_final:
+                disease = "RASHES"
+                self.severity_message.setText("Don’t worry! You don’t have to go see a doctor yet. We’ve got you covered right here!")
+                self.severity.setText("SEVERITY: MODERATE")
+                self.output_disease.setText(disease)
         
     def image_update_slot(self, image):
         self.camera_box.setPixmap(QtGui.QPixmap.fromImage(image))
@@ -176,12 +187,11 @@ class Ui_MainWindow(object):
         _translate = QtCore.QCoreApplication.translate
         MainWindow.setWindowTitle(_translate("MainWindow", "CamMD"))
         self.camera_box.setText(_translate("MainWindow", "Stream camera here"))
-        self.severity.setText(_translate("MainWindow", f"SEVERITY: ")) # edit severity here
-        self.output_disease.setText(_translate("MainWindow", "RASHES"))
-
+        self.severity.setText(_translate("MainWindow", "")) # edit severity here
+        self.output_disease.setText(_translate("MainWindow", ""))
         self.treat.setText(_translate("MainWindow", "Treat >>>"))
         self.cancel.setText(_translate("MainWindow", "Scan Now"))
-        self.severity_message.setText(_translate("MainWindow", "Don’t worry! You don’t have to go see a doctor yet. We’ve got you covered right here!"))
+        self.severity_message.setText(_translate("MainWindow", ""))
 
 class Worker1(QtCore.QThread): 
         """CLASS TO THREAD CAMERA"""
