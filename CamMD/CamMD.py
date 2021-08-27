@@ -15,6 +15,7 @@ import cv2
 class Ui_MainWindow(object):
     """MAIN WINDOW"""
 
+
     def __init__(self):   
         self.Worker1 = Worker1()
         self.Worker1.start()
@@ -167,11 +168,12 @@ class Ui_MainWindow(object):
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
 
     def retranslateUi(self, MainWindow):
+        """All the text data that goes into the UI"""
         _translate = QtCore.QCoreApplication.translate
         MainWindow.setWindowTitle(_translate("MainWindow", "CamMD"))
         self.camera_box.setText(_translate("MainWindow", "Stream camera here"))
-        self.severity.setText(_translate("MainWindow", "SEVERITY:")) # edit severity here
-        self.output_disease.setText(_translate("MainWindow", "OUTPUT DISEASE HERE"))
+        self.severity.setText(_translate("MainWindow", f"SEVERITY: {severity}")) # edit severity here
+        self.output_disease.setText(_translate("MainWindow", "RASHES"))
 
         self.treat.setText(_translate("MainWindow", "Treat >>>"))
         self.cancel.setText(_translate("MainWindow", "Cancel"))
@@ -185,7 +187,7 @@ class Worker1(QtCore.QThread):
                 self.ThreadActive = True
                 capture = cv2.VideoCapture(0) # Initialize camera
                 while self.ThreadActive:
-                        s, frame = capture.read()
+                        s, frame = capture.read() # frames for capture
                         if s:
                                 image = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
                                 flipped_image = cv2.flip(image, 1)
@@ -195,6 +197,13 @@ class Worker1(QtCore.QThread):
         def stop(self):
                 self.ThreadActive = False
                 self.quit()
+
+        
+
+
+
+
+
 
 class Ui_TreatmentsWindow(object):
     """TREATMENTS WINDOW"""
