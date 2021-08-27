@@ -10,10 +10,12 @@
 
 from PyQt5 import QtCore, QtGui, QtWidgets
 import cv2, numpy as np
-# from Treatments import Ui_TreatmentsWindow
+from CamMDdb import find_wound
 
 label_list = set() # Global label_list lololol
-disease = ""
+disease = "" # global disease so we can import
+step_1 = "" # global step 1
+step_2 = "" # global step 2
 
 class Ui_MainWindow(object):
     """MAIN WINDOW"""
@@ -23,7 +25,7 @@ class Ui_MainWindow(object):
         self.Worker1 = Worker1()
         self.Worker1.start()
         self.Worker1.update_image.connect(self.image_update_slot)
-       
+
     def open_window(self):
         self.window = QtWidgets.QMainWindow()
         self.ui = Ui_TreatmentsWindow()
@@ -34,19 +36,32 @@ class Ui_MainWindow(object):
         
 
     def scan_now(self):
+        global step_1
+        global step_2
+
         self.Worker1.stop()
         label_list_final = label_list
         print(f"This is your final label list {label_list_final}")
         if 'blister' in label_list_final:
-                disease = "BLISTER"
+                disease = "BLISTER" # use this to search
                 self.severity_message.setText("Don’t worry! You don’t have to go see a doctor yet. We’ve got you covered right here!")
                 self.severity.setText("SEVERITY: MILD")
                 self.output_disease.setText(disease)
+                s1, s2 = find_wound(disease)
+                step_1 = s1
+                step_2 = s2 
         if 'rashes' in label_list_final:
-                disease = "RASHES"
+                disease = "RASHES" # use this to search
                 self.severity_message.setText("Don’t worry! You don’t have to go see a doctor yet. We’ve got you covered right here!")
                 self.severity.setText("SEVERITY: MODERATE")
                 self.output_disease.setText(disease)
+
+                find_wound(disease)
+                s1, s2 = find_wound(disease)
+                step_1 = s1
+                step_2 = s2               
+        else:
+                self.di.setText("NONE FOUND")
         
     def image_update_slot(self, image):
         self.camera_box.setPixmap(QtGui.QPixmap.fromImage(image))
@@ -260,11 +275,15 @@ class Worker1(QtCore.QThread):
 
 class Ui_TreatmentsWindow(object):
     """TREATMENTS WINDOW"""
+
+    def change_treatment(self):    
+        self.stepbox1.setPlainText(step_1)
+        self.stepbox2.setPlainText(step_2)
+        print(step_1)
+        print(step_2)
+
     def home(self):
-        self.window = QtWidgets.QMainWindow()
-        self.ui = Ui_MainWindow()
-        self.ui.setupUi(self.window)
-        self.window.show()
+        sys.exit()
         
     def setupUi(self, TreatmentsWindow):
         TreatmentsWindow.setObjectName("TreatmentsWindow")
@@ -285,11 +304,12 @@ class Ui_TreatmentsWindow(object):
         self.header_rectangle_2.setText("")
         self.header_rectangle_2.setObjectName("header_rectangle_2")
         self.treatment1 = QtWidgets.QPushButton(self.centralwidget)
-        self.treatment1.setGeometry(QtCore.QRect(40, 120, 271, 51))
+        self.treatment1.setGeometry(QtCore.QRect(40, 120, 271, 51)) #step_1 = s1 step_2 = s2
         font = QtGui.QFont()
         font.setFamily("Poppins")
         font.setPointSize(16)
         self.treatment1.setFont(font)
+        self.treatment1.clicked.connect(self.change_treatment)
         self.treatment1.setCursor(QtGui.QCursor(QtCore.Qt.PointingHandCursor))
         self.treatment1.setStyleSheet("border-radius: 17px;\n"
 "background-color: #E5E5E5; \n"
@@ -481,13 +501,15 @@ class Ui_TreatmentsWindow(object):
         self.treatment3.setText(_translate("TreatmentsWindow", "Treatment 3"))
         self.treatment6.setText(_translate("TreatmentsWindow", "Treatment 6"))
         self.treatment5.setText(_translate("TreatmentsWindow", "Treatment 5"))
-        self.back_home.setText(_translate("TreatmentsWindow", "Back"))
-        self.stepbox1.setPlainText(_translate("TreatmentsWindow", "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum."))
+        self.back_home.setText(_translate("TreatmentsWindow", "Quit"))
+        self.stepbox1.setPlainText(_translate("TreatmentsWindow", ""))
         self.first_step.setText(_translate("TreatmentsWindow", "Step 1:"))
         self.second_step.setText(_translate("TreatmentsWindow", "Step 2:"))
-        self.stepbox2.setPlainText(_translate("TreatmentsWindow", "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum."))
+        self.stepbox2.setPlainText(_translate("TreatmentsWindow", ""))
         self.page_back.setText(_translate("TreatmentsWindow", "<<"))
         self.page_forward.setText(_translate("TreatmentsWindow", ">>"))
+
+
 
 if __name__ == "__main__":
     import sys

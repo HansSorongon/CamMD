@@ -2,6 +2,7 @@ import cv2
 import numpy as np
 import time
 import sqlite3
+
 connect = sqlite3.connect('CamMDtest.db')
 cursor = connect.cursor()
 
@@ -85,8 +86,8 @@ def captureandrecognize():
 def recommend(wound):
     for i in wound:
         cursor.execute("SELECT recommendation FROM CamMD WHERE wound = ?", (i,))
-        reccomendation=cursor.fetchall()
-        for j in reccomendation:#send reccomendation to user
+        recommendation=cursor.fetchmany(2)
+        for j in recommendation:#send reccomendation to user
             print(j[0])
 
 wounds=captureandrecognize()
