@@ -1,5 +1,5 @@
 
-###### About CamMD
+# About CamMD
 
 A desktop application that utilizes object detection with the help of different 
 open-source libraries to identify different injuries or visible symptoms and give 
@@ -12,7 +12,7 @@ facilities will still have access to treatment.
 GUI - PyQT, PyQT Designer
 BACKEND - Python, OpenCV
 
-*** The Team
+### The Team
 
 Hans Aaron Sorongon - Hacker, Hipster
 Raphael Lorenzo Panaligan - Hacker
