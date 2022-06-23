@@ -14,10 +14,10 @@ BACKEND - Python, OpenCV
 
 ### The Team
 
-Hans Aaron Sorongon - Hacker, Hipster
-Raphael Lorenzo Panaligan - Hacker
-Martin Angelo Trajano - Hustler
-Pio Renato Sanchez - Hustler
+Hans Aaron Sorongon - Hacker, Hipster <br>
+Raphael Lorenzo Panaligan - Hacker <br>
+Martin Angelo Trajano - Hustler <br>
+Pio Renato Sanchez - Hustler <br>
 
 This is a project prototype created for the 2021 Impact Hub Hackathon Manila Health.
 We are a team composed mostly of Grade 12 students. Our goal is to learn and gain 
