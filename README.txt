@@ -1,6 +1,5 @@
 
-ABOUT CAMMD
-==============================================================================
+###### About CamMD
 
 A desktop application that utilizes object detection with the help of different 
 open-source libraries to identify different injuries or visible symptoms and give 
@@ -8,17 +7,12 @@ corresponding treatment based on the injury scanned.  Treatments will be stored
 within a database to ensure that citizens without access to the internet or nearby 
 facilities will still have access to treatment.
 
-REQUIREMENTS: FRAMEWORKS, LIBRARIES, SOFTWARES USED:
-==============================================================================
+### Requirements
 
 GUI - PyQT, PyQT Designer
 BACKEND - Python, OpenCV
 
-NOTE: You can find the YOLO cfg and weights files on 
-https://drive.google.com/drive/folders/1TB80BV8SAPCE99gIM659ppj9-7uTnX9d?usp=sharing
-
-THE TEAM
-==============================================================================
+*** The Team
 
 Hans Aaron Sorongon - Hacker, Hipster
 Raphael Lorenzo Panaligan - Hacker
