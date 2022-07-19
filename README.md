@@ -16,7 +16,6 @@ BACKEND - Python, OpenCV
 
 Hans Aaron Sorongon - Hacker, Hipster <br>
 Raphael Lorenzo Panaligan - Hacker <br>
-Martin Angelo Trajano - Hustler <br>
 Pio Renato Sanchez - Hustler <br>
 
 This is a project prototype created for the 2021 Impact Hub Hackathon Manila Health.
